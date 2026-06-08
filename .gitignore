@@ -1,0 +1,41 @@
+# Data files (too large for GitHub, root level only)
+/data/
+*.h5
+*.bam
+*.bai
+*.bed
+*.csv
+*.parquet
+*.fasta
+*.fasta.*
+
+# Model checkpoints
+/models/
+*.pth
+
+# Logs
+/logs/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary
+temp_processing/
+_probe_ref/
+ablation_test/
+
+# Local-only working files (not part of the public release)
+/local/
+
+# Output artefacts
+/results/
