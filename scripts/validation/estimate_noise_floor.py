@@ -266,18 +266,12 @@ def main():
     # ================================================================
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    # Semantic color palette, top-journal grade saturated forest-green family
-    # for technical replicate / noise floor data, vivid tomato red for reference lines.
-    # Deep saturated tones replace the previous pastel set to improve contrast at
-    # low scatter alpha and to align with Nature/NAR figure conventions.
-    C_MODEL = '#4878D0'
-    C_FLOOR = '#1F7A48'         # deep forest green for replicate scatter
-    C_FLOOR_LIGHT = '#74C69D'   # spring green for histogram fill (visible at alpha 0.8)
-    C_FLOOR_WARM = '#40916C'    # medium forest green for bar chart
-    C_RANDOM = '#D65F5F'
-    C_REF = '#D62828'           # tomato red, vivid contrast to forest-green data
+    # Okabe-Ito colourblind-safe palette, consistent across all paper figures.
+    # Green = between-replicate / noise-floor data. Grey = reference lines.
+    C_FLOOR = '#009E73'         # bluish green (replicate scatter, per-bin variance bars)
+    C_REF = '#444444'           # dark grey (identity, zero, global reference lines)
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5.5))
 
     # Panel A: Scatter, green = technical replicate data points
     ax = axes[0]
@@ -289,32 +283,22 @@ def main():
             label='Identity line (y = x)')
     ax.set_xlabel('Efficiency', fontsize=11)
     ax.set_ylabel('Efficiency', fontsize=11)
+    ax.set_title('Between-replicate agreement', fontsize=11)
     ax.legend(fontsize=9, loc='upper left')
     ax.set_aspect('equal')
 
-    # Panel B: Residual histogram, light green fill, distinct from Panel A scatter
+    # Panel B: Noise by bin, green bars, grey global floor line
     ax = axes[1]
-    ax.hist(residuals, bins=100, density=True, color=C_FLOOR_LIGHT,
-            alpha=0.8, edgecolor='none')
-    ax.axvline(0, color=C_REF, linestyle='--', linewidth=1.2,
-               label='Zero residual')
-    ax.axvline(np.mean(residuals), color=C_FLOOR, linestyle='-', linewidth=1.0,
-               label=f'Mean residual ({np.mean(residuals):.3f})')
-    ax.set_xlabel('Residual', fontsize=11)
-    ax.set_ylabel('Density', fontsize=11)
-    ax.legend(fontsize=9)
-
-    # Panel C: Noise by bin, warm green bars, orange global floor line
-    ax = axes[2]
     if bin_centers and bin_mses:
         ax.bar(range(len(bin_centers)), [m / 2 for m in bin_mses],
-               color=C_FLOOR_WARM, alpha=0.8, edgecolor='white')
+               color=C_FLOOR, alpha=0.8, edgecolor='white', width=0.6)
         ax.set_xticks(range(len(bin_centers)))
         ax.set_xticklabels([f'{c:.1f}' for c in bin_centers], fontsize=8, rotation=45)
         ax.axhline(noise_floor_mse, color=C_REF, linestyle='--', linewidth=1.5,
                    label=f'Global per-meas variance = {noise_floor_mse:.4f}')
         ax.set_xlabel('Efficiency bin centre', fontsize=11)
         ax.set_ylabel('Per-measurement variance', fontsize=11)
+        ax.set_title('Noise by efficiency bin', fontsize=11)
         ax.legend(fontsize=9)
 
     plt.tight_layout()

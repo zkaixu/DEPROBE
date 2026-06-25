@@ -189,10 +189,10 @@ def main():
     # ----------------------------------------------------------------
     # Three-panel figure: scatter + residual hist + per-chr bar
     # ----------------------------------------------------------------
-    # Top-journal unified palette (consistent across all paper figures).
-    C_DATA = '#1F4E79'   # deep navy blue (matched-position scatter / hist fill)
-    C_REF  = '#D62828'   # tomato red (identity, zero, global reference)
-    C_BAR  = '#40916C'   # medium forest green (per-chromosome bars)
+    # Okabe-Ito colourblind-safe palette, consistent across all paper figures.
+    C_DATA = '#0072B2'   # blue (matched-position scatter, residual fill, mean line)
+    C_REF  = '#444444'   # dark grey (identity, zero, global reference lines)
+    C_BAR  = '#0072B2'   # blue (per-chromosome bars)
 
     rng = np.random.default_rng(42)
     if n > args.scatter_subsample:
@@ -208,8 +208,8 @@ def main():
     ax.scatter(a_plot, b_plot, s=1, alpha=0.1, c=C_DATA, rasterized=True)
     lims = [min(a.min(), b.min()), max(a.max(), b.max())]
     ax.plot(lims, lims, color=C_REF, linestyle='--', linewidth=1.2, label='Identity (y = x)')
-    ax.set_xlabel(args.label_a_col, fontsize=11)
-    ax.set_ylabel(args.label_b_col, fontsize=11)
+    ax.set_xlabel(args.label_a_col.replace('_label', ''), fontsize=11)
+    ax.set_ylabel(args.label_b_col.replace('_label', ''), fontsize=11)
     ax.set_title(f'Position-Matched Labels (N={n:,})', fontsize=11)
     ax.legend(fontsize=9, loc='upper left')
     ax.set_aspect('equal')
@@ -221,25 +221,27 @@ def main():
     ax.axvline(0, color=C_REF, linestyle='--', linewidth=1.2, label='Zero residual')
     ax.axvline(float(np.mean(residuals)), color=C_DATA, linestyle='-', linewidth=1.0,
                label=f'Mean ({float(np.mean(residuals)):.3f})')
-    ax.set_xlabel(f'Residual ({args.label_b_col} − {args.label_a_col})', fontsize=11)
+    ax.set_xlabel('Residual', fontsize=11)
     ax.set_ylabel('Density', fontsize=11)
     ax.set_title('Between-Kit Residuals', fontsize=11)
     ax.legend(fontsize=9)
 
-    # Panel C: per-chromosome Spearman bar
+    # Panel C: per-chromosome Pearson bar (22 autosomes; chrX, chrY excluded)
+    WITHIN_KIT_R = 0.601  # within-kit Pearson baseline, NIST7086 vs NIST7035 (Fig 4 / estimate_noise_floor.py)
     ax = axes[2]
-    if per_chr_rows:
-        labels = [r['Chromosome'] for r in per_chr_rows]
-        rhos   = [r['Spearman_rho'] for r in per_chr_rows]
-        ax.bar(range(len(labels)), rhos, color=C_BAR, alpha=0.85, edgecolor='white')
-        ax.axhline(spearman_rho, color=C_REF, linestyle='--', linewidth=1.5,
-                   label=f'Global ρ = {spearman_rho:.3f}')
+    auto_rows = [r for r in per_chr_rows if r['Chromosome'].replace('chr', '').isdigit()]
+    if auto_rows:
+        labels = [r['Chromosome'] for r in auto_rows]
+        prs    = [r['Pearson_r'] for r in auto_rows]
+        ax.bar(range(len(labels)), prs, color=C_BAR, alpha=0.85, edgecolor='white', width=0.6)
+        ax.axhline(WITHIN_KIT_R, color=C_REF, linestyle='--', linewidth=1.5,
+                   label=f'Within-kit replicate r = {WITHIN_KIT_R}')
         ax.set_xticks(range(len(labels)))
         ax.set_xticklabels(labels, fontsize=8, rotation=70)
-        ax.set_ylabel('Spearman ρ', fontsize=11)
+        ax.set_ylabel('Pearson r', fontsize=11)
         ax.set_title('Per-Chromosome Agreement', fontsize=11)
         ax.legend(fontsize=9)
-        ax.set_ylim(min(0.0, min(rhos) - 0.05), max(1.0, max(rhos) + 0.05))
+        ax.set_ylim(0.0, max(0.7, max(prs) + 0.1))
 
     plt.tight_layout()
     fig_path = os.path.join(PLOTS_DIR, 'matched_bed_label_scatter.png')

@@ -212,12 +212,12 @@ def render_plot(df: pd.DataFrame, lr_drops: List[int], resumes: List[Tuple[str, 
     best_int_ep, best_int_val = int(eps[best_int_idx]), float(int_val[best_int_idx])
     best_ext_ep, best_ext_val = int(eps[best_ext_idx]), float(ext_val[best_ext_idx])
 
-    # Semantic palette (matches the rest of the codebase)
-    C_TRAIN = '#4878D0'   # blue   (model)
-    C_INT   = '#6ACC64'   # green  (internal val, replicate-side)
-    C_EXT   = '#EE854A'   # orange (external val, held-out replicate)
-    C_FLOOR = '#9C7EBE'   # purple (noise floor reference)
-    C_LR    = '#7F7F7F'   # grey   (LR schedule)
+    # Okabe-Ito colourblind-safe palette, consistent across all paper figures.
+    C_TRAIN = '#0072B2'   # blue (training MSE)
+    C_INT   = '#009E73'   # bluish green (internal validation)
+    C_EXT   = '#D55E00'   # vermillion (external validation)
+    C_FLOOR = '#444444'   # dark grey (optional reference line)
+    C_LR    = '#444444'   # dark grey (learning-rate schedule)
 
     fig, (ax_mse, ax_lr) = plt.subplots(
         2, 1, figsize=(14, 9), sharex=True,
@@ -247,7 +247,7 @@ def render_plot(df: pd.DataFrame, lr_drops: List[int], resumes: List[Tuple[str, 
 
     # LR-drop vertical lines (= scheduler reductions = SAM activations downstream)
     for i, drop in enumerate(lr_drops):
-        ax_mse.axvline(drop, color='#D65F5F', linestyle=':', linewidth=1.0, alpha=0.55,
+        ax_mse.axvline(drop, color='#999999', linestyle=':', linewidth=1.0, alpha=0.55,
                        label='LR reduce / SAM activate' if i == 0 else None)
 
     ax_mse.set_ylabel('MSE', fontsize=12)
@@ -257,7 +257,7 @@ def render_plot(df: pd.DataFrame, lr_drops: List[int], resumes: List[Tuple[str, 
     # ----- LR panel -----
     ax_lr.plot(eps, lrs, color=C_LR, linewidth=1.5, drawstyle='steps-post')
     for i, drop in enumerate(lr_drops):
-        ax_lr.axvline(drop, color='#D65F5F', linestyle=':', linewidth=1.0, alpha=0.55)
+        ax_lr.axvline(drop, color='#999999', linestyle=':', linewidth=1.0, alpha=0.55)
     ax_lr.set_xlabel('Epoch', fontsize=12)
     ax_lr.set_ylabel('Learning Rate', fontsize=11)
     ax_lr.set_yscale('log')

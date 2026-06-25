@@ -273,24 +273,16 @@ def main():
     # Plots
     # ================================================================
 
-    # Semantic color palette, consistent across ALL figures
-    # Blue    = DEPROBE model / model predictions
-    # Green   = Noise floor / technical replicate
-    # Coral   = Random baseline / warning
-    # Orange  = Reference lines (identity, zero)
-    # Top-journal unified palette (consistent across all paper figures).
-    # Blue family = DEPROBE model. Green family = replicate / noise floor.
-    # Gray = random baseline (neutral). Tomato red = reference lines.
-    C_MODEL = '#1F4E79'       # deep navy blue
-    C_MODEL_LIGHT = '#5B9BD5' # medium blue for histogram fill
-    C_FLOOR = '#1F7A48'       # deep forest green
-    C_RANDOM = '#7F7F7F'      # medium gray (random baseline)
-    C_REF = '#D62828'         # tomato red (reference lines)
+    # Okabe-Ito colourblind-safe palette, consistent across all paper figures.
+    # Blue = DEPROBE model. Orange = random baseline. Grey = reference lines.
+    C_MODEL = '#0072B2'   # blue (model predictions)
+    C_RANDOM = '#D55E00'  # vermillion (random baseline)
+    C_REF = '#444444'     # dark grey (reference lines)
 
-    fig, axes = plt.subplots(2, 2, figsize=(14, 12))
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
 
     # Panel A: Predicted vs Actual scatter, blue = model predictions
-    ax = axes[0, 0]
+    ax = axes[0]
     subsample = np.random.choice(n, min(50000, n), replace=False)
     ax.scatter(y_true[subsample], y_pred[subsample], s=1, alpha=0.1,
                c=C_MODEL, rasterized=True)
@@ -301,23 +293,10 @@ def main():
     ax.set_title('Predicted vs True', fontsize=11)
     ax.legend(fontsize=9, loc='upper left')
 
-    # Panel B: Residual distribution, light blue fill + green noise floor ref
-    ax = axes[0, 1]
-    residuals = y_pred - y_true
-    ax.hist(residuals, bins=100, density=True, color=C_MODEL_LIGHT,
-            alpha=0.75, edgecolor='none')
-    ax.axvline(0, color=C_REF, linestyle='--', linewidth=1.2, label='Zero residual')
-    ax.axvline(np.mean(residuals), color=C_MODEL, linestyle='-', linewidth=1.0,
-               label=f'Mean residual ({np.mean(residuals):.3f})')
-    ax.set_xlabel('Residual (Predicted - True)', fontsize=11)
-    ax.set_ylabel('Density', fontsize=11)
-    ax.set_title('Prediction Residuals', fontsize=11)
-    ax.legend(fontsize=9)
-
-    # Panel C: Top-K Precision, dark blue bars + coral random baseline
-    ax = axes[1, 0]
+    # Panel B: Top-K Precision, blue bars + orange random baseline
+    ax = axes[1]
     ax.bar(range(len(k_values)), precisions, color=C_MODEL, alpha=0.85,
-           edgecolor='white', label='DEPROBE precision')
+           edgecolor='white', width=0.6, label='DEPROBE precision')
     for i, k in enumerate(k_values):
         ax.plot([i - 0.4, i + 0.4], [k / 100, k / 100], color=C_RANDOM,
                 linestyle='--', linewidth=1.5,
@@ -329,12 +308,12 @@ def main():
     ax.set_ylim(0, 1)
     ax.legend(fontsize=9)
 
-    # Panel D: MSE context, coral = random baseline, blue = current model
-    ax = axes[1, 1]
+    # Panel C: MSE context, orange = random baseline, blue = current model
+    ax = axes[2]
     metrics = ['Random\nBaseline', 'Current\nModel']
     values = [random_mse, mse]
     bar_colors = [C_RANDOM, C_MODEL]
-    bars = ax.bar(metrics, values, color=bar_colors, alpha=0.85, edgecolor='white')
+    bars = ax.bar(metrics, values, color=bar_colors, alpha=0.85, edgecolor='white', width=0.6)
     for bar, val in zip(bars, values):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02,
                 f'{val:.3f}', ha='center', fontsize=11, fontweight='bold')

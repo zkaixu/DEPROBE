@@ -204,7 +204,7 @@ def render_plot(per_split_results: Dict[str, Dict[float, Dict]],
         squeeze=False,
     )
     # Color per top-K threshold (deeper colour = stricter threshold)
-    palette = ['#08306B', '#2171B5', '#6BAED6']  # ColorBrewer sequential blue (dark→light)
+    palette = ['#0072B2', '#D55E00', '#009E73']  # Okabe-Ito qualitative (top-10/20/50%)
     if len(topk_grid) > 3:
         # Fall back to viridis for >3 thresholds
         cmap = plt.get_cmap('viridis')
@@ -232,7 +232,7 @@ def render_plot(per_split_results: Dict[str, Dict[float, Dict]],
                           linestyle=':', linewidth=0.8, alpha=0.55)
 
         # ROC reference: diagonal = random
-        ax_roc.plot([0, 1], [0, 1], color='#888888', linestyle='--',
+        ax_roc.plot([0, 1], [0, 1], color='#444444', linestyle='--',
                     linewidth=1.0, alpha=0.7, label='Random')
         ax_roc.set_xlim(0, 1)
         ax_roc.set_ylim(0, 1.005)

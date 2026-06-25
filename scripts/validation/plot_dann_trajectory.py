@@ -16,13 +16,14 @@ import re
 
 import matplotlib.pyplot as plt
 
-# Top-journal unified palette (consistent across all paper figures).
+# Okabe-Ito colourblind-safe palette, consistent across all paper figures.
 # Blue = source-domain training (DEPROBE model fitting improving).
-# Tomato red = target-domain failure (the canonical DANN miss).
-# Mustard = alpha schedule (the adversarial reversal strength).
-C_SOURCE = '#1F4E79'   # deep navy blue
-C_TARGET = '#D62828'   # tomato red
-C_ALPHA = '#E9C46A'    # mustard yellow
+# Vermillion = target-domain failure (the canonical DANN miss).
+# Amber = alpha schedule. Grey = random-prediction baseline.
+C_SOURCE = '#0072B2'   # blue
+C_TARGET = '#D55E00'   # vermillion
+C_ALPHA = '#E69F00'    # amber
+C_REF = '#444444'      # dark grey (random-prediction baseline)
 
 
 def parse_log(log_path):
@@ -63,6 +64,8 @@ def main():
              label=f'Source held-out (Nextera): {src[0]:.3f} → {min(src):.3f}')
     ax1.plot(epochs, tgt, color=C_TARGET, linewidth=2.0, marker='s', markersize=3,
              label=f'Target (TruSeq): {min(tgt):.2f}–{max(tgt):.2f} (flat)')
+    ax1.axhline(1.0, color=C_REF, linestyle=':', linewidth=1.2, alpha=0.8,
+                label='Random baseline (MSE = 1.000)')
     ax1.set_ylabel('MSE', fontsize=11)
     ax1.legend(fontsize=10, loc='center right')
     ax1.grid(alpha=0.3)
