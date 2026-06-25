@@ -1,6 +1,6 @@
 # DEPROBE-DNA
 
-**Deep learning for hybridization-capture probe selection and the limits of cross-kit transfer**
+**Kit-specific label functions, not covariate shift, block cross-kit capture-efficiency prediction**
 
 Zhikai Xu, Department of Advanced and Regenerative Medicine, Institute of Health and Medicine, Hefei Comprehensive National Science Center, Anhui, China
 
@@ -10,7 +10,7 @@ Hybridization-capture sequencing enriches selected genomic targets before sequen
 
 Designed for that regime, DEPROBE-DNA is a physics-informed convolutional Transformer that integrates a twelve-dimensional thermodynamic prior vector with learned sequence representations through dual-pathway early and late fusion, and trains on genome-wide sliding-window candidates rather than on a pre-existing manufactured panel. A Huber regression objective is paired with a Rank-N-Contrast contrastive auxiliary loss to preserve label rank ordering at the prediction-distribution extremes, with plateau-triggered Sharpness-Aware Minimization for late-stage refinement.
 
-This repository reproduces two findings from the accompanying manuscript. On 344,090 designed Nextera Expanded Exome probes evaluated against an independent Genome in a Bottle technical replicate of NA12878, DEPROBE-DNA achieves 32.6-fold enrichment over random at Top-1% selection, a 9.1-percentage-point Top-1% lead over a methodologically matched BiGRU baseline. On a matched-position dual-kit dataset built from 1.68 million Nextera ∩ TruSeq intersection probes in NA12878, capture-efficiency labels at identical genomic positions diverge between kits (Pearson r = 0.21 cross-kit vs r = 0.60 within-kit), and domain-adversarial training does not close the gap. The divergence is attributable to kit-specific contextual contributions to depth-derived labels rather than feature-space mismatch, ruling out unsupervised domain adaptation as a remedy and indicating that cross-kit deployment requires direct measurement of probe-target hybridization in place of depth-derived labels.
+This repository reproduces two findings from the accompanying manuscript. On 344,090 designed Nextera Expanded Exome probes evaluated against an independent Genome in a Bottle technical replicate of NA12878, DEPROBE-DNA achieves 32.6-fold enrichment over random at Top-1% selection, a 9.2-percentage-point Top-1% lead over the BiGRU baseline. On a matched-position dual-kit dataset built from 1.68 million Nextera ∩ TruSeq intersection probes in NA12878, capture-efficiency labels at identical genomic positions diverge between kits (Pearson r = 0.21 cross-kit vs r = 0.60 within-kit), and domain-adversarial training does not close the gap. The divergence is attributable to kit-specific contextual contributions to depth-derived labels rather than feature-space mismatch, ruling out unsupervised domain adaptation as a remedy and indicating that cross-kit deployment requires direct measurement of probe-target hybridization in place of depth-derived labels.
 
 ## Repository Structure
 
@@ -57,6 +57,8 @@ DEPROBE_DNA/
 │   │   ├── plot_training_trajectory.py # Phase 1 training trajectory
 │   │   ├── label_correlation_diagnostic.py # Matched-position cross-kit scatter
 │   │   ├── roc_analysis.py          # ROC and PR curves under top-K binarisation
+│   │   ├── bootstrap_ci.py          # Paired bootstrap CIs for Top-K precision gaps
+│   │   ├── make_model_comparison_figure.py # Bootstrap-CI forest + ablation waterfall figure
 │   │   ├── probe_validation_suite_ablation.py # Ablation evaluation wrapper
 │   │   ├── probe_validation_suite_bigru.py # BiGRU baseline evaluation wrapper
 │   │   ├── go_probe_eval.sh         # Probe evaluation launcher
