@@ -1,41 +1,21 @@
-# Data files (too large for GitHub, root level only)
-/data/
-*.h5
-*.bam
-*.bai
-*.bed
-*.csv
-*.parquet
-*.fasta
-*.fasta.*
+# Publish only the source scripts and top-level docs. Everything else
+# (datasets, model checkpoints, logs, results, scratch directories) stays
+# local: it is neither committed nor named here, so the repository does not
+# expose the project's working layout.
 
-# Model checkpoints
-/models/
-*.pth
+# Ignore every top-level entry by default.
+/*
 
-# Logs
-/logs/
+# Re-include only what is meant to be public.
+!/scripts/
+!/README.md
+!/setup_env.sh
+!/.gitignore
+!/LICENSE
+!/pixi.toml
+!/pyproject.toml
 
-# Python cache
+# Drop Python bytecode caches even inside the published tree.
 __pycache__/
 *.pyc
 *.pyo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# Temporary
-temp_processing/
-_probe_ref/
-ablation_test/
-
-# Local-only working files (not part of the public release)
-/local/
-
-# Output artefacts
-/results/
