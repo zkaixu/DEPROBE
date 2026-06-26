@@ -1,12 +1,12 @@
 # DEPROBE-DNA
 
-**Kit-specific label functions, not covariate shift, block cross-kit capture-efficiency prediction**
+**Kit-specific label functions block cross-kit capture-efficiency prediction**
 
 Zhikai Xu, Department of Advanced and Regenerative Medicine, Institute of Health and Medicine, Hefei Comprehensive National Science Center, Anhui, China
 
 ## Overview
 
-Hybridization-capture sequencing enriches selected genomic targets before sequencing and underlies most clinical exome panels in variant discovery, pharmacogenomic profiling, and hereditary disease screening. A working panel contains tens to hundreds of thousands of biotinylated oligonucleotide probes selected from a much larger candidate pool to maximise per-target sequencing depth at fixed panel size. Existing deep-learning approaches optimise within-panel regression accuracy on fixed manufactured panels and have not been purpose-built for the top-K candidate-selection regime that drives commercial panel curation.
+Hybridization-capture sequencing enriches selected genomic targets before sequencing and underlies most clinical exome panels in variant discovery, pharmacogenomic profiling, and hereditary disease screening. A working panel contains tens to hundreds of thousands of biotinylated oligonucleotide probes selected from a much larger candidate pool at fixed panel size, and the chosen probes must cover every target sufficiently and uniformly with little off-target capture. Existing deep-learning approaches optimise within-panel regression accuracy on fixed manufactured panels and have not been purpose-built for the top-K candidate-selection regime that drives commercial panel curation.
 
 Designed for that regime, DEPROBE-DNA is a physics-informed convolutional Transformer that integrates a twelve-dimensional thermodynamic prior vector with learned sequence representations through dual-pathway early and late fusion, and trains on genome-wide sliding-window candidates rather than on a pre-existing manufactured panel. A Huber regression objective is paired with a Rank-N-Contrast contrastive auxiliary loss to preserve label rank ordering at the prediction-distribution extremes, with plateau-triggered Sharpness-Aware Minimization for late-stage refinement.
 
